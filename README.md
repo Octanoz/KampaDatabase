@@ -1,6 +1,10 @@
 # KampaDatabase
 Console app - Hospital Database, final exercise on the Kampa Plays tutorial series on YouTube
 
+> Originally this project was almost 2 years old. I learned about the Spectre Console Nuget package and thought it would be cool to pimp this project up.
+> While going through the code I realized I had hardcoded complete paths and decided to purge the original commits so now it looks like a new project.
+> This probably means I won't be able to help myself and refactor some things beyond just making it work with Spectre Console.
+
 ## Instructions
 
 Build a C# console application to serve as a hospital administrative portal with the following features:
