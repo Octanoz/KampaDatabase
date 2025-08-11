@@ -1,23 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace DatabaseChallenge;
 
-namespace DatabaseChallenge
+using Spectre.Console;
+
+internal record Doctor(int EmployeeID, string FirstName, string LastName, string JobTitle, string Specialization) : Employee(EmployeeID, FirstName, LastName, JobTitle), IPage
 {
-    internal class Doctor : Employee, IPage
+    public void Page()
     {
-        public Doctor(int employeeID, string firstName, string lastName, string jobTitle, string specialization) : base(employeeID, firstName, lastName, jobTitle)
-        {
-            Specialization = specialization;
-        }
-
-        public string Specialization { get; set; }
-
-        public void Page()
-        {
-            Console.WriteLine($"Paging {JobTitle} {LastName}.");
-        }
+        AnsiConsole.MarkupLineInterpolated($"[teal]Paging {JobTitle} {LastName}.[/]");
     }
 }

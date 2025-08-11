@@ -6,10 +6,5 @@ using System.Threading.Tasks;
 
 namespace DatabaseChallenge
 {
-    internal class Custodian : Employee
-    {
-        public Custodian(int employeeID, string firstName, string lastName, string jobTitle) : base(employeeID, firstName, lastName, jobTitle)
-        {
-        }
-    }
+    internal record Custodian(int EmployeeID, string FirstName, string LastName, string JobTitle) : Employee(EmployeeID, FirstName, LastName, JobTitle);
 }
