@@ -40,45 +40,23 @@ public static class DatabaseFunctions
             string lastName = employeeDetails[2];
             string jobTitle = employeeDetails[3];
             string jobSpecific = employeeDetails[4];
-            Employee employee;
 
-
-            switch (jobTitle)
+            Employees.Add(jobTitle switch
             {
-                case "Doctor":
-                    employee = new Doctor(employeeID, firstName, lastName, jobTitle, jobSpecific);
-                    Employees.Add(employee);
-                    break;
-
-                case "Nurse":
-                    employee = new Nurse(employeeID, firstName, lastName, jobTitle, jobSpecific);
-                    Employees.Add(employee);
-                    break;
-
-                case "Custodian":
-                    employee = new Custodian(employeeID, firstName, lastName, jobTitle, jobSpecific);
-                    Employees.Add(employee);
-                    break;
-
-                case "Other":
-                    employee = new Other(employeeID, firstName, lastName, jobTitle, jobSpecific);
-                    Employees.Add(employee);
-                    break;
-
-                default:
-                    AnsiConsole.MarkupLineInterpolated($"[red slowblink]Unknown job title in {file}.[/]\nPlease contact your system administrator.");
-                    break;
-            }
+                "Doctor" => new Doctor(employeeID, firstName, lastName, jobTitle, jobSpecific),
+                "Nurse" => new Nurse(employeeID, firstName, lastName, jobTitle, jobSpecific),
+                "Custodian" => new Custodian(employeeID, firstName, lastName, jobTitle, jobSpecific),
+                _ => new Other(employeeID, firstName, lastName, jobTitle, jobSpecific)
+            });
         }
 
-        Markup loadedEmployees = new(files.Length switch
+        AnsiConsole.Write(new Markup(files.Length switch
         {
             1 => "\tLoaded [yellow1]1[/] employee from the system.",
-            var x when x > 0 => $"\tLoaded [yellow1]{x}[/] employees from the system.",
+            var x when x > 1 => $"\tLoaded [yellow1]{x}[/] employees from the system.",
             _ => "\t[red slowblink]There are no employees in the file system.[/]"
-        });
+        }));
 
-        AnsiConsole.Write(loadedEmployees);
         Console.WriteLine("\n");
 
         EmployeesLoaded = files.Length is not 0;
