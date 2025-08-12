@@ -403,4 +403,7 @@ public static class DatabaseFunctions
 
         Console.ReadKey();
     }
+
+    internal static Doctor[] GetDoctors() => [.. Employees.OfType<Doctor>()];
+    internal static Nurse[] GetNurses() => [.. Employees.OfType<Nurse>()];
 }
