@@ -26,8 +26,9 @@ public static class Navigation
         ];
 
         string choice = AnsiConsole.Prompt(
-            new SelectionPrompt<string>().Title("\tChoose from the following options:")
-                                         .AddChoices(options)
+            new SelectionPrompt<string>()
+                .Title("\tChoose from the following options:")
+                .AddChoices(options)
         );
 
         string[] splitChoice = choice.Split();

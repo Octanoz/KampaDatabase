@@ -14,36 +14,24 @@ while (keepRunning)
 
 void ProcessInput(string userInput)
 {
-    switch (userInput)
+    if (userInput is "exit")
     {
-        case "load":
-            DatabaseFunctions.Load();
-            break;
-        case "ids":
-            DatabaseFunctions.ViewIDs();
-            break;
-        case "view names":
-            DatabaseFunctions.ViewFile(ViewOrder.Names);
-            break;
-        case "view roles":
-            DatabaseFunctions.ViewFile(ViewOrder.Roles);
-            break;
-        case "page":
-            Communication.PageMedicalStaff();
-            break;
-        case "add":
-            DatabaseFunctions.AddEmployee();
-            break;
-        case "remove":
-            DatabaseFunctions.RemoveEmployee();
-            break;
-        case "clear":
-            Navigation.ClearScreen();
-            break;
-        case "exit":
-            keepRunning = Navigation.ExitYesNo();
-            break;
-        default:
-            throw new ArgumentException($"Unknown command: {userInput}, please create a support ticket");
+        keepRunning = Navigation.ExitYesNo();
+        return;
     }
+
+    Action action = userInput switch
+    {
+        "load" => DatabaseFunctions.Load,
+        "ids" => DatabaseFunctions.ViewIDs,
+        "view names" => () => DatabaseFunctions.ViewFile(ViewOrder.Names),
+        "view roles" => () => DatabaseFunctions.ViewFile(ViewOrder.Roles),
+        "page" => Communication.PageMedicalStaff,
+        "add" => DatabaseFunctions.AddEmployee,
+        "remove" => DatabaseFunctions.RemoveEmployee,
+        "clear" => Navigation.ClearScreen,
+        _ => throw new ArgumentException($"Unknown command: {userInput}, please create a support ticket")
+    };
+
+    action();
 }
