@@ -1,4 +1,6 @@
-﻿using DatabaseChallenge;
+﻿using DatabaseChallenge.Enums;
+using DatabaseChallenge.Services;
+
 using Spectre.Console;
 
 bool keepRunning = true;
@@ -21,8 +23,11 @@ void ProcessInput(string userInput)
         case "ids":
             DatabaseFunctions.ViewIDs();
             break;
-        case "view":
-            DatabaseFunctions.ViewFile();
+        case "view names":
+            DatabaseFunctions.ViewFile(ViewOrder.Names);
+            break;
+        case "view roles":
+            DatabaseFunctions.ViewFile(ViewOrder.Roles);
             break;
         case "page":
             Communication.PageMedicalStaff();
