@@ -1,8 +1,7 @@
 namespace DatabaseChallenge.Services;
 
-using DatabaseChallenge.Interfaces;
-
 using Spectre.Console;
+using DatabaseChallenge.Interfaces;
 
 public static class Communication
 {

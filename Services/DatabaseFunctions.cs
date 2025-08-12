@@ -3,9 +3,8 @@ namespace DatabaseChallenge.Services;
 using System.Text;
 using System.Globalization;
 using Spectre.Console;
-using Spectre.Console.Rendering;
 using DatabaseChallenge.Enums;
-using DatabaseChallenge.EmployeeClasses;
+using DatabaseChallenge.Models;
 
 public static class DatabaseFunctions
 {

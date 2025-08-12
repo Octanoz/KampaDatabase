@@ -1,7 +1,6 @@
-﻿using DatabaseChallenge.Enums;
+﻿using Spectre.Console;
+using DatabaseChallenge.Enums;
 using DatabaseChallenge.Services;
-
-using Spectre.Console;
 
 bool keepRunning = true;
 
@@ -45,12 +44,6 @@ void ProcessInput(string userInput)
             keepRunning = Navigation.ExitYesNo();
             break;
         default:
-            AnsiConsole.MarkupLine(
-                """
-                
-                [red rapidblink]Unknown command[/]. Please try again.
-                Type [lightskyblue1 italic]help[/] for a list of available commands.
-                """);
-            break;
+            throw new ArgumentException($"Unknown command: {userInput}, please create a support ticket");
     }
 }

@@ -1,7 +1,7 @@
-﻿namespace DatabaseChallenge.EmployeeClasses;
+﻿namespace DatabaseChallenge.Models;
 
-using DatabaseChallenge.Interfaces;
 using Spectre.Console;
+using DatabaseChallenge.Interfaces;
 
 internal record Nurse(int EmployeeID, string FirstName, string LastName, string JobTitle, string Level) : Employee(EmployeeID, FirstName, LastName, JobTitle), IPage
 {

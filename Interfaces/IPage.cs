@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace DatabaseChallenge.Interfaces;
 
-namespace DatabaseChallenge.Interfaces
+internal interface IPage
 {
-    internal interface IPage
-    {
-        void Page();
-    }
+    void Page();
 }
