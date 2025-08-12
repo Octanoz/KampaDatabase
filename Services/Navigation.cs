@@ -16,11 +16,11 @@ public static class Navigation
         [
             "load \t\tLoad existing employees' details from file",
             "ids \t\tView all employee IDs in the system",
-            "view names \tEnter the employee's ID number to view the details, names first",
-            "view roles \tEnter the employee's ID number to view the details, roles first",
+            "view names \tView employee's details, sorted by last names",
+            "view roles \tView employee's details, sorted by job title",
             "page \t\tPages all medical staff",
             "add \t\tInput the employees details and add them to the system",
-            "remove \tEnter the employee's ID number to remove it from the system",
+            "remove \tSelect employee details to be removed from the system",
             "clear \tClear the screen, back to welcome screen",
             "exit \t\tExit the program",
         ];
@@ -28,7 +28,7 @@ public static class Navigation
         string choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>().Title("\tChoose from the following options:")
                                          .AddChoices(options)
-            );
+        );
 
         string[] splitChoice = choice.Split();
         if (splitChoice[0] is "view")
@@ -70,7 +70,7 @@ public static class Navigation
                 .AddChoice('y')
                 .AddChoice('n')
                 .DefaultValue('n')
-            );
+        );
 
         if (exitChoice is 'n')
         {
