@@ -79,117 +79,27 @@ public static class DatabaseFunctions
             """);
 
         int newId = Random.Shared.Next(100, 1000);
-        while (employeeIDs.Contains(newId))
-        {
-            newId = Random.Shared.Next(100, 1000);
-        }
-
         while (true)
-        {            
-            string firstName = AnsiConsole.Prompt(
-                new TextPrompt<string>("First name: ")
-                    .Validate(x => x switch
-                    {
-                        var name when string.IsNullOrWhiteSpace(name) => ValidationResult.Error("First name cannot be left empty"),
-                        var name when name.Length < 3 => ValidationResult.Error("First name should be at least 3 characters long"),
-                        var name when name.Contains(' ') => ValidationResult.Error("First name cannot contain whitespace, connect names with hyphens if needed"),
-                        var name when name.Any(c => char.IsDigit(c)) => ValidationResult.Error("Names cannot contain numeric characters"),
-                        _ => ValidationResult.Success()
-                    }));
+        {
+            while (employeeIDs.Contains(newId))
+            {
+                newId = Random.Shared.Next(100, 1000);
+            }
 
+            string firstName = TitleCase(PromptFirstName());
             if (firstName.Equals("exit", StringComparison.CurrentCultureIgnoreCase))
                 break;
 
-            string lastNamePrefix = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                    .Title("Does the surname included prefixes?")
-                    .AddChoices("N/A", "van ", "van de ", "van der ", "vande ", "vander ", "of ", "di ", "de ", "dela ", "della ", "de la ", "le "));
-            
-            string lastName = AnsiConsole.Prompt(
-                new TextPrompt<string>("Last name: ")
-                    .Validate(x => x switch
-                    {
-                        var name when string.IsNullOrWhiteSpace(name) => ValidationResult.Error("Last name cannot be left empty"),
-                        var name when name.TrimEnd().Length < 3 => ValidationResult.Error("Last name should be at least 3 characters long"),
-                        var name when name.Any(c => char.IsDigit(c)) => ValidationResult.Error("Names cannot contain numeric characters"),
-                        _ => ValidationResult.Success()
-                    }));
-
-            if (lastName.Equals("exit", StringComparison.CurrentCultureIgnoreCase))
-                break;
-
+            string lastNamePrefix = PromptLastNamePrefix();
+            string lastName = PromptLastName();
             if (lastNamePrefix is not "N/A")
                 lastName = $"{lastNamePrefix}{lastName}";
-
-            string jobTitle = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                    .Title("Job Title: (Contact Payroll if an appropriate role is not available)")
-                    .AddChoices("Doctor", "Nurse", "Custodian", "Other")
-                );
-
-            firstName = TitleCase(firstName);
             lastName = TitleCase(lastName);
-            jobTitle = TitleCase(jobTitle);
 
-            switch (jobTitle)
-            {
-                case "Doctor":
-                    string specialization = AnsiConsole.Prompt(
-                        new SelectionPrompt<string>()
-                            .Title("Specialization:")
-                            .AddChoices(jobRoles["Doctor"])
-                        );
+            string jobTitle = PromptJobTitle();
+            var (fullPath, details) = ProcessEmployee(newId, firstName, lastName, jobTitle);
 
-                
-                    char jobLetter = 'D';
-                    string fullPath = FullPath(newId, lastName, jobLetter);
-                    string medicalStaffDetails = WriteStaffFile(newId, firstName, lastName, jobTitle, specialization);
-
-                    File.WriteAllText(fullPath, medicalStaffDetails);
-                    break;
-
-                case "Nurse":
-                    string level = AnsiConsole.Prompt(
-                        new SelectionPrompt<string>()
-                            .Title("Level: ")
-                            .AddChoices(jobRoles["Nurse"])
-                        );
-
-                    jobLetter = 'N';
-                    fullPath = FullPath(newId, lastName, jobLetter);
-                    medicalStaffDetails = WriteStaffFile(newId, firstName, lastName, jobTitle, level);
-
-                    File.WriteAllText(fullPath, medicalStaffDetails);
-                    break;
-
-                case "Custodian":
-                    string category = AnsiConsole.Prompt(
-                        new SelectionPrompt<string>()
-                            .Title("Category:")
-                            .AddChoices(jobRoles["Custodian"])
-                        );
-
-                    jobLetter = 'C';
-                    fullPath = FullPath(newId, lastName, jobLetter);
-                    string custodianDetails = WriteStaffFile(newId, firstName, lastName, jobTitle, category);
-
-                    File.WriteAllText(fullPath, custodianDetails);
-                    break;
-
-                default:
-                    string invalidRole = AnsiConsole.Prompt(
-                        new SelectionPrompt<string>()
-                            .Title("Category:")
-                            .AddChoices(jobRoles["Other"])
-                        );
-
-                    jobLetter = 'O';
-                    fullPath = FullPath(newId, lastName, jobLetter);
-                    string otherDetails = WriteStaffFile(newId, firstName, lastName, jobTitle, invalidRole);
-
-                    File.WriteAllText(fullPath, otherDetails);
-                    break;
-            }
+            File.WriteAllText(fullPath, details);
 
             AnsiConsole.MarkupLine("\n[lightgreen]Employee file successfully added to the file system.[/]");
             if (jobTitle is "Other")
@@ -202,18 +112,75 @@ public static class DatabaseFunctions
             }
 
             Load();
-            EmployeesLoaded = true;
 
             Console.WriteLine("Do you want to add another employee file?");
             bool addAnotherFile = Navigation.YesNo();
             if (addAnotherFile)
             {
                 Console.WriteLine();
-                ViewIDs();
                 continue;
             }
+
             break;
         }
+    }
+
+    private static string PromptFirstName() =>
+        AnsiConsole.Prompt(
+            new TextPrompt<string>("First name: ")
+                .Validate(x => x switch
+                {
+                    var name when string.IsNullOrWhiteSpace(name) => ValidationResult.Error("First name cannot be left empty"),
+                    var name when name.Length < 3 => ValidationResult.Error("First name should be at least 3 characters long"),
+                    var name when name.Contains(' ') => ValidationResult.Error("First name cannot contain whitespace, connect names with hyphens if needed"),
+                    var name when name.Any(c => char.IsDigit(c)) => ValidationResult.Error("Names cannot contain numeric characters"),
+                    _ => ValidationResult.Success()
+                }));
+
+    private static string PromptLastNamePrefix() =>
+        AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title("Does the surname included prefixes?")
+                .AddChoices("N/A", "van ", "van de ", "van der ", "vande ", "vander ", "of ", "di ", "de ", "dela ", "della ", "de la ", "le ", "la "));
+
+    private static string PromptLastName() =>
+        AnsiConsole.Prompt(
+            new TextPrompt<string>("Last name: ")
+                .Validate(x => x switch
+                {
+                    var name when string.IsNullOrWhiteSpace(name) => ValidationResult.Error("Last name cannot be left empty"),
+                    var name when name.TrimEnd().Length < 3 => ValidationResult.Error("Last name should be at least 3 characters long"),
+                    var name when name.Any(c => char.IsDigit(c)) => ValidationResult.Error("Names cannot contain numeric characters"),
+                    _ => ValidationResult.Success()
+                }));
+
+    private static string PromptJobTitle() =>
+        AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title("Job Title: (Choose 'other' if an appropriate role is not listed and contact Payroll with the ticket number generated after processing.)")
+                .AddChoices("Doctor", "Nurse", "Custodian", "Other")
+            );
+
+    private static (string, string) ProcessEmployee(int id, string firstName, string lastName, string jobTitle)
+    {
+        string category = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title("Category/Level/Specialization:")
+                .AddChoices(jobRoles[jobTitle])
+            );
+
+        char jobLetter = jobTitle switch
+        {
+            "Custodian" => 'C',
+            "Doctor" => 'D',
+            "Nurse" => 'N',
+            _ => 'O'
+        };
+
+        string fullPath = FullPath(id, lastName, jobLetter);
+        string empDetails = WriteStaffFile(id, firstName, lastName, jobTitle, category);
+
+        return (fullPath, empDetails);
     }
 
     public static void RemoveEmployee()
@@ -240,13 +207,17 @@ public static class DatabaseFunctions
             deletePanel.Header("Please confirm deletion").Padding(5, 0);
             AnsiConsole.Write(deletePanel);
 
-            if(Navigation.YesNo())
+            bool deleteConfirmed = Navigation.YesNo();
+            if(deleteConfirmed)
             {
-                string[] files = Directory.GetFiles(employeeFilesPath, $"{requestedID}*");
-                string fullPath = Path.Combine(employeeFilesPath, files[0]);
+                string fileName = Directory.GetFiles(employeeFilesPath, $"{requestedID}*")[0];
+                string fullPath = Path.Combine(employeeFilesPath, fileName);
                 File.Delete(fullPath);
-                Console.WriteLine("File successfully deleted.");
-                Employees.Clear();
+                Console.WriteLine("File successfully deleted.\n");
+
+                Employee deletedEmployee = Employees.First(e => e.EmployeeID == requestedID);
+                Employees.Remove(deletedEmployee);
+                employeeIDs.Remove(requestedID);
                 EmployeesLoaded = false;
             }
 
@@ -370,17 +341,14 @@ public static class DatabaseFunctions
         return $"{header}\n{jobSpecific}";
     }
 
-    private static string WriteStaffFile(int employeeID, string firstName, string lastName, string jobTitle, string specialization)
-    {
-        StringBuilder sb = new();
-        sb.AppendLine($"{employeeID}");
-        sb.AppendLine(firstName);
-        sb.AppendLine(lastName);
-        sb.AppendLine(jobTitle);
-        sb.AppendLine(specialization);
-
-        return sb.ToString();
-    }
+    private static string WriteStaffFile(int employeeID, string firstName, string lastName, string jobTitle, string specialization) =>
+        $"""
+        {employeeID}
+        {firstName}
+        {lastName}
+        {jobTitle}
+        {specialization}
+        """;
 
     private static string FullPath(int employeeID, string lastName, char jobLetter)
     {
