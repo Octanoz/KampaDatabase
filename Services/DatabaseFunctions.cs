@@ -211,8 +211,7 @@ public static class DatabaseFunctions
             if(deleteConfirmed)
             {
                 string fileName = Directory.GetFiles(employeeFilesPath, $"{requestedID}*")[0];
-                string fullPath = Path.Combine(employeeFilesPath, fileName);
-                File.Delete(fullPath);
+                File.Delete(fileName);
                 Console.WriteLine("File successfully deleted.\n");
 
                 Employee deletedEmployee = Employees.First(e => e.EmployeeID == requestedID);
